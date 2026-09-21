@@ -352,6 +352,22 @@ describe('main tests', () => {
       expect(core.setFailed as jest.Mock).not.toHaveBeenCalled();
     }, 10000);
 
+    it('treats a leading-slash node-version-file as filesystem-absolute', async () => {
+      // Arrange: `/.nvmrc` used to be joined onto the workspace (`path.join`
+      // strips the leading slash). `path.resolve` keeps it filesystem-absolute.
+      const workspace = process.env['GITHUB_WORKSPACE']!;
+      inputs['node-version-file'] = '/.nvmrc';
+      const resolvedPath = path.resolve(workspace, '/.nvmrc');
+      expect(resolvedPath).not.toBe(path.join(workspace, '/.nvmrc'));
+      getNodeVersionFromFileSpy.mockImplementation(() => '20');
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getNodeVersionFromFileSpy).toHaveBeenCalledWith(resolvedPath);
+    }, 10000);
+
     it('should throw an error if node-version-file is not accessible', async () => {
       // Arrange
       inputs['node-version-file'] = 'non-existing-file';
