@@ -137,7 +137,7 @@ function resolveVersionInput(): string {
       );
     }
 
-    core.info(`Resolved ${versionFileInput} as ${version}`);
+    core.info(`Resolved ${versionFilePath} as ${version}`);
   }
 
   return version;
